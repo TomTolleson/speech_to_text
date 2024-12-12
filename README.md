@@ -35,7 +35,7 @@ The transcribe.py script will:
 
 ## Performance Optimization
 
-For your RTX 3050, add these lines at the start of the script for better performance:
+For hardware GPU acceleration, add these lines at the start of the script for better performance:
 
 ```python
 import torch
