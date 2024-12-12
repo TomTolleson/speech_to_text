@@ -1,0 +1,49 @@
+# Environment variables and secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Virtual Environment
+venv/
+env/
+.venv/
+.env/
+ENV/
+
+# Input and Output directories
+input_audio/*
+output_text/*
+
+# Keep the directories but ignore contents
+!input_audio/.gitkeep
+!output_text/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store 
