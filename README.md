@@ -1,8 +1,7 @@
 #Speech to Text
 
-![whisper-small](whisper-small.png)
-![CUDA](cuda.png)
-![pytorch](pytorch.png)
+![nVIDIA](https://img.shields.io/badge/cuda-000000.svg?style=for-the-badge&logo=nVIDIA&logoColor=green)
+![PyTorch](https://img.shields.io/badge/PyTorch-%23EE4C2C.svg?style=for-the-badge&logo=PyTorch&logoColor=white)
 
 This is a pytorch application that uses the whisper model to transcribe audio files. In the transcribe.py script, we're using "whisper-small" from OpenAI's Whisper family, as shown in these specific lines:
 
