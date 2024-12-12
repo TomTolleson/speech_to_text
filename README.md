@@ -1,6 +1,6 @@
 #Speech to Text
 
-![whisper-small](whisper-small.png
+![whisper-small](whisper-small.png)
 ![CUDA](cuda.png)
 ![pytorch](pytorch.png)
 
