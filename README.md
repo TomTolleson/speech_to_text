@@ -15,7 +15,7 @@ model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
 
 Create the necessary directories:
 
-bash```
+```bash
 mkdir input_audio output_text
 ```
 ## Usage Instructions
@@ -24,7 +24,7 @@ Place your WAV files in the input_audio directory
 
 Run the script:
 
-bash```
+```bash
 python transcribe.py
 ```
 The transcribe.py script will:
