@@ -24,7 +24,10 @@ def setup_model(device):
     print("\n=== Model Setup ===")
     print(f"Loading Whisper model on device: {device}")
     processor = WhisperProcessor.from_pretrained("openai/whisper-small")
-    model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
+    model = WhisperForConditionalGeneration.from_pretrained(
+        "openai/whisper-small",
+        forced_decoder_ids=None  # Disable default forced decoder IDs
+    )
     
     if device == "cuda":
         try:
@@ -57,17 +60,63 @@ def transcribe_audio(audio_path, processor, model, device):
         
         # Process through model
         print("Processing through Whisper model...")
-        input_features = processor(waveform[0].numpy(), 
-                                 sampling_rate=16000, 
-                                 return_tensors="pt").input_features
+        inputs = processor(
+            waveform[0].numpy(), 
+            sampling_rate=16000, 
+            return_tensors="pt",
+            return_attention_mask=True
+        )
         
         if device == "cuda":
-            input_features = input_features.to(device)
+            # Clear CUDA cache and sync before processing
+            torch.cuda.empty_cache()
+            torch.cuda.synchronize()
+            
+            try:
+                # Move inputs to GPU safely
+                inputs = {k: v.to(device) for k, v in inputs.items()}
+                model = model.to(device)
+                
+                # Generate with reduced batch size and length
+                print("Starting transcription generation...")
+                with torch.amp.autocast('cuda', dtype=torch.float16):
+                    predicted_ids = model.generate(
+                        inputs['input_features'],
+                        attention_mask=inputs['attention_mask'],
+                        max_length=224000,  # Reduced from 448000
+                        num_beams=2,        # Reduced from 5
+                        task='transcribe',
+                        language='en'
+                    )
+                    torch.cuda.synchronize()
+            except RuntimeError as e:
+                print(f"CUDA error: {e}")
+                print("Falling back to CPU...")
+                device = "cpu"
+                model = model.to("cpu")
+                inputs = {k: v.to("cpu") for k, v in inputs.items()}
+                
+                # Try again on CPU
+                predicted_ids = model.generate(
+                    inputs['input_features'],
+                    attention_mask=inputs['attention_mask'],
+                    max_length=224000,
+                    num_beams=2,
+                    task='transcribe',
+                    language='en'
+                )
+        else:
+            # CPU generation
+            predicted_ids = model.generate(
+                inputs['input_features'],
+                attention_mask=inputs['attention_mask'],
+                max_length=224000,
+                num_beams=2,
+                task='transcribe',
+                language='en'
+            )
         
-        # Generate transcription
-        predicted_ids = model.generate(input_features)
-        transcription = processor.batch_decode(predicted_ids, 
-                                             skip_special_tokens=True)[0]
+        transcription = processor.batch_decode(predicted_ids, skip_special_tokens=True)[0]
         return transcription
         
     except Exception as e:

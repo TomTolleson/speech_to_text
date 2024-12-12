@@ -14,6 +14,7 @@ model = WhisperForConditionalGeneration.from_pretrained("openai/whisper-small")
 ## Project Structure
 
 Create the necessary directories:
+
 bash```
 mkdir input_audio output_text
 ```
